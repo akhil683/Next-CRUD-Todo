@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import Todo from "@/components/Todo";
+import { Toaster, toast } from "react-hot-toast";
 
 interface FormType {
   title: string;
@@ -13,19 +14,44 @@ export default function Home() {
     description: "",
   });
 
+  const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    const name = e.target.name;
+    setFormData({ ...formData, [name]: e.target.value });
+  };
+  const onSubmitHandler = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!formData.title || !formData.description) {
+      return toast.error("Title and Description is Required !");
+    }
+    try {
+      toast.success("Successfully created Todo");
+    } catch (e: any) {
+      console.log(e.message);
+      toast.error("Something went wrong !");
+    }
+  };
+
   return (
     <>
-      <form className="flex items-end flex-col gap-2 max-w-[700px] mt-24 px-2 mx-auto">
+      <Toaster position="bottom-right" />
+      <form
+        onSubmit={onSubmitHandler}
+        className="flex items-end flex-col gap-2 max-w-[700px] mt-24 px-2 mx-auto"
+      >
         <input
           type="text"
+          value={formData.title}
           name="title"
           placeholder="Enter Title"
-          className="px-3 py-2 border-2 border-[#999] placeholder-[#888] outline-[#777] focus:border-[#777] w-full rounded-xl"
+          className="px-3 py-2 border-2 border-[#999] placeholder-[#888] outline-[#333] w-full rounded-xl"
+          onChange={onChangeHandler}
         />
-        <textarea
+        <input
           name="description"
+          value={formData.description}
           placeholder="Enter Description"
-          className="px-3 py-2 border-2 border-[#999] placeholder-[#888] outline-[#777] focus:border-[#777] w-full rounded-xl"
+          className="px-3 py-2 border-2 border-[#999] placeholder-[#888] outline-[#333] w-full rounded-xl"
+          onChange={onChangeHandler}
         />
         <button
           type="submit"
